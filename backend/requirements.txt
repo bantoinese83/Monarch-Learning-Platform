@@ -1,0 +1,22 @@
+Django==5.0.1
+djangorestframework==3.14.0
+django-cors-headers==4.3.1
+channels==4.0.0
+channels-redis==4.2.0
+psycopg[binary]>=3.1.0
+redis==5.0.1
+celery==5.3.4
+google-genai>=1.50.0
+python-dotenv==1.0.0
+Pillow>=10.3.0
+django-filter==23.5
+djangorestframework-simplejwt==5.3.0
+django-extensions==3.2.3
+django-debug-toolbar==4.2.0
+graphene-django==3.1.5
+django-model-utils==4.3.1
+mypy==1.7.1
+django-stubs==4.2.7
+ruff>=0.1.0  # Ultra-fast linter and formatter (2025 trending)
+python-docx>=1.1.0  # For DOCX text extraction
+

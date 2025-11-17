@@ -1,0 +1,23 @@
+{
+  "name": "monarch-learning-platform",
+  "version": "1.0.0",
+  "description": "AI-powered personalized learning and tutoring system",
+  "scripts": {
+    "start": "./scripts/start.sh",
+    "stop": "./scripts/stop.sh",
+    "restart": "./scripts/restart.sh",
+    "status": "./scripts/status.sh",
+    "install:all": "cd backend && python3 -m venv venv && source venv/bin/activate && pip install --upgrade pip && pip install -r requirements.txt && cd ../frontend && npm install",
+    "setup": "cd backend && source venv/bin/activate && python3 manage.py makemigrations && python3 manage.py migrate",
+    "logs": "tail -f logs/*.log"
+  },
+  "keywords": [
+    "education",
+    "learning",
+    "ai",
+    "tutoring"
+  ],
+  "author": "",
+  "license": "MIT"
+}
+

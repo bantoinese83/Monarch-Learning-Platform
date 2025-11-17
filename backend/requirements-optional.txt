@@ -1,0 +1,23 @@
+# Optional packages for enhanced features (2025 trending)
+# Install only if you want these features
+
+# LangChain - Enhanced AI tutor bot with memory and chains
+langchain>=0.1.0
+langchain-google-genai>=1.0.0  # For Gemini integration
+
+# Ruff - Ultra-fast linter and formatter (replaces black, isort, flake8)
+ruff>=0.1.0
+
+# Polars - Fast DataFrame library for analytics (if needed)
+polars>=0.20.0
+
+# PyCaret - Low-code ML for learning path recommendations
+pycaret>=3.0.0
+
+# FastAPI - High-performance async API (for specific endpoints)
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+
+# Hydra - Configuration management (if configs become complex)
+hydra-core>=1.3.0
+
