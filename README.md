@@ -26,27 +26,25 @@
 
 ### Dashboard
 ![Dashboard Screenshot](docs/screenshots/dashboard.png)
-*Personalized dashboard with progress tracking and analytics*
+*Personalized dashboard with progress tracking, subject performance charts, and quick actions*
 
 ### Content Management
 ![Content Screenshot](docs/screenshots/content.png)
-*Upload and manage educational content with AI-powered metadata extraction*
+*Upload and manage educational content with AI-powered metadata extraction and indexing status*
 
 ### Assessment Generation
 ![Assessment Screenshot](docs/screenshots/assessment.png)
-*AI-generated assessments based on uploaded content*
+*AI-generated assessments based on uploaded content with real-time generation progress*
 
 ### Tutor Bot
 ![Tutor Bot Screenshot](docs/screenshots/tutor-bot.png)
-*Real-time AI tutor with file search integration and citations*
+*Real-time AI tutor with file search integration, WebSocket connection status, and citation support*
 
 ### Analytics
 ![Analytics Screenshot](docs/screenshots/analytics.png)
-*Comprehensive analytics with interactive charts*
+*Comprehensive analytics dashboard with interactive charts, score distribution, and performance trends*
 
 </div>
-
-> **Note**: Screenshots are placeholders. Add your actual screenshots to `docs/screenshots/` directory.
 
 ---
 
@@ -139,7 +137,7 @@
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/monarch-learning.git
+git clone https://github.com/bantoinese83/Monarch-Learning-Platform.git
 cd monarch-learning
 
 # Install all dependencies
@@ -519,7 +517,7 @@ Assessment Request → Assessment Generator → Gemini File Search → Questions
 
 ### Backend Tests
 
-```bash
+   ```bash
 # Run all tests
 make test
 
@@ -539,7 +537,7 @@ coverage html  # Generate HTML report
 
 ### Frontend Tests
 
-```bash
+   ```bash
 cd frontend
 npm test        # Run tests (if configured)
 npm run lint    # Lint code
@@ -555,7 +553,7 @@ npm run type-check  # TypeScript type checking
 **Problem**: Services fail to start
 
 **Solutions**:
-```bash
+   ```bash
 # Check if Redis is running
 redis-cli ping  # Should return PONG
 
