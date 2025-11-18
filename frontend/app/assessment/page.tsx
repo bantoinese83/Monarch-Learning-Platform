@@ -26,7 +26,9 @@ interface Assessment {
 function AssessmentPageContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const subject = searchParams.get('subject') || 'General'
+  const [availableSubjects, setAvailableSubjects] = useState<string[]>([])
+  const [subjectFromUrl, setSubjectFromUrl] = useState<string | null>(null)
+  const [subject, setSubject] = useState<string | null>(null)
   const topic = searchParams.get('topic') || 'Mixed Topics'
 
   const [assessment, setAssessment] = useState<Assessment | null>(null)
@@ -46,7 +48,54 @@ function AssessmentPageContent() {
     }
   }, [])
 
+  // Fetch available subjects from content
+  useEffect(() => {
+    const fetchAvailableSubjects = async () => {
+      try {
+        const response = await api.get('/content/files/')
+        const contents = response.data.results || response.data
+        // Extract unique subjects from indexed content
+        const subjects = Array.from(new Set(
+          contents
+            .filter((c: any) => c.indexed && c.subject)
+            .map((c: any) => c.subject as string)
+        )) as string[]
+        setAvailableSubjects(subjects)
+        
+        // Get subject from URL
+        const urlSubject = searchParams.get('subject')
+        setSubjectFromUrl(urlSubject)
+        
+        // Determine which subject to use
+        if (urlSubject && urlSubject !== 'General') {
+          // Use subject from URL if it's valid
+          setSubject(urlSubject)
+        } else if (subjects.length > 0) {
+          // Use first available subject if no subject in URL or URL has "General"
+          setSubject(subjects[0])
+          // Update URL if it was "General" or missing
+          if (!urlSubject || urlSubject === 'General') {
+            router.replace(`/assessment?subject=${encodeURIComponent(subjects[0])}&topic=${encodeURIComponent(topic)}`)
+          }
+        } else {
+          // No subjects available
+          setSubject(null)
+        }
+      } catch (error) {
+        console.error('Failed to fetch available subjects:', error)
+        setSubject(null)
+      }
+    }
+    
+    fetchAvailableSubjects()
+  }, [searchParams, topic, router])
+
   const loadAssessment = useCallback(async () => {
+    // Don't load if no subject is available
+    if (!subject) {
+      setLoading(false)
+      return
+    }
     // Prevent multiple simultaneous requests
     if (isLoadingRef.current) {
       console.log('Assessment load already in progress, skipping...')
@@ -126,17 +175,15 @@ function AssessmentPageContent() {
     }
   }, [subject, topic])
 
+  // Load assessment when subject is determined
   useEffect(() => {
-    // Only load if not already loading
-    if (!isLoadingRef.current) {
-      // Reset state when subject or topic changes
+    if (subject && !isLoadingRef.current) {
       setAssessment(null)
       setError(null)
       setLoading(true)
       loadAssessment()
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [subject, topic])
+  }, [subject, loadAssessment])
 
   const handleAnswerSelect = (questionId: string, answer: string) => {
     setAnswers(prev => ({
@@ -229,10 +276,47 @@ function AssessmentPageContent() {
     )
   }
 
+  // Show empty state if no subject is available
+  if (!subject && !loading) {
+    return (
+      <Layout>
+        <EmptyState
+          icon={
+            <svg
+              className="mx-auto h-16 w-16 text-gray-400"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              aria-hidden="true"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.5}
+                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+              />
+            </svg>
+          }
+          title="No Content Available"
+          description="You need to upload and index educational content first before assessments can be generated. Upload your materials to get started with personalized assessments."
+          action={{
+            label: 'Upload Content',
+            href: '/content'
+          }}
+          secondaryAction={{
+            label: 'Back to Dashboard',
+            href: '/dashboard'
+          }}
+        />
+      </Layout>
+    )
+  }
+
   if (!assessment && !loading) {
     // Determine empty state message based on error
     const isNoContentError = error?.toLowerCase().includes('no educational content') || 
-                             error?.toLowerCase().includes('upload content')
+                             error?.toLowerCase().includes('upload content') ||
+                             error?.toLowerCase().includes('cannot generate \'general\'')
     
     const emptyStateTitle = isNoContentError 
       ? 'No Content Available'
