@@ -12,6 +12,7 @@ try:
     from langchain.prompts import ChatPromptTemplate, PromptTemplate
     from langchain.schema import AIMessage, HumanMessage
     from langchain_google_genai import ChatGoogleGenerativeAI
+
     LANGCHAIN_AVAILABLE = True
 except ImportError:
     LANGCHAIN_AVAILABLE = False
@@ -21,7 +22,7 @@ class LangChainTutorBotService:
     """
     Enhanced tutor bot using LangChain for better conversation management,
     memory, and prompt chaining.
-    
+
     Features:
     - Conversation memory across sessions
     - Multi-step reasoning chains
@@ -64,7 +65,7 @@ class LangChainTutorBotService:
     ) -> dict:
         """
         Generate tutor bot response using LangChain with enhanced features.
-        
+
         Args:
             query: Student's question
             student_id: Student ID for personalization
@@ -72,7 +73,7 @@ class LangChainTutorBotService:
             subject_filter: Filter by subject
             difficulty_filter: Filter by difficulty
             use_memory: Whether to use conversation memory
-        
+
         Returns:
             Dict with 'text' and 'citations'
         """
@@ -96,10 +97,12 @@ class LangChainTutorBotService:
             )
 
             # Generate response
-            response = chain.invoke({
-                "question": query,
-                "chat_history": self.memory.chat_memory.messages if use_memory else [],
-            })
+            response = chain.invoke(
+                {
+                    "question": query,
+                    "chat_history": self.memory.chat_memory.messages if use_memory else [],
+                }
+            )
 
             return {
                 "text": response.get("answer", ""),
@@ -124,16 +127,20 @@ class LangChainTutorBotService:
         ]
 
         if student_context:
-            if student_context.get('grade_level'):
-                context_parts.append(f"Adapt explanations for {student_context['grade_level']} level.")
+            if student_context.get("grade_level"):
+                context_parts.append(
+                    f"Adapt explanations for {student_context['grade_level']} level."
+                )
 
-            if student_context.get('learning_style'):
-                style = student_context['learning_style']
-                if style == 'visual':
+            if student_context.get("learning_style"):
+                style = student_context["learning_style"]
+                if style == "visual":
                     context_parts.append("Use visual analogies and examples.")
-                elif style == 'auditory':
-                    context_parts.append("Explain concepts verbally with clear step-by-step instructions.")
-                elif style == 'reading':
+                elif style == "auditory":
+                    context_parts.append(
+                        "Explain concepts verbally with clear step-by-step instructions."
+                    )
+                elif style == "reading":
                     context_parts.append("Provide detailed written explanations with examples.")
 
         if subject_filter:
@@ -158,12 +165,13 @@ Provide a helpful, educational answer:"""
     def _get_student_context(self, student_id: int) -> dict | None:
         """Get student profile context"""
         from students.models import StudentProfile
+
         try:
-            profile = StudentProfile.objects.select_related('user').get(user_id=student_id)
+            profile = StudentProfile.objects.select_related("user").get(user_id=student_id)
             return {
-                'learning_style': profile.learning_style,
-                'grade_level': profile.grade_level,
-                'preferred_language': profile.preferred_language,
+                "learning_style": profile.learning_style,
+                "grade_level": profile.grade_level,
+                "preferred_language": profile.preferred_language,
             }
         except StudentProfile.DoesNotExist:
             return None
@@ -171,10 +179,10 @@ Provide a helpful, educational answer:"""
     def _load_history_to_memory(self, history: list[dict]):
         """Load conversation history into LangChain memory"""
         for msg in history:
-            if msg['role'] == 'user':
-                self.memory.chat_memory.add_user_message(msg['content'])
-            elif msg['role'] == 'assistant':
-                self.memory.chat_memory.add_ai_message(msg['content'])
+            if msg["role"] == "user":
+                self.memory.chat_memory.add_user_message(msg["content"])
+            elif msg["role"] == "assistant":
+                self.memory.chat_memory.add_ai_message(msg["content"])
 
     def clear_memory(self):
         """Clear conversation memory"""
@@ -190,4 +198,3 @@ Provide a helpful, educational answer:"""
 #     conversation_history=history,
 #     use_memory=True
 # )
-

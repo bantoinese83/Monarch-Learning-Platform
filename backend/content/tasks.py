@@ -1,6 +1,7 @@
 """
 Celery tasks for async file processing
 """
+
 import logging
 
 from celery import shared_task
@@ -21,17 +22,17 @@ def index_educational_content(self, content_id: int):
     content = None
     try:
         content = EducationalContent.objects.optimized().get(id=content_id)
-        
+
         # Reset error state
-        content.indexing_error = ''
-        content.save(update_fields=['indexing_error'])
+        content.indexing_error = ""
+        content.save(update_fields=["indexing_error"])
 
         # Default chunking config optimized for educational content
         # API requires max_tokens_per_chunk to be between 0 and 512
         chunking_config = {
-            'white_space_config': {
-                'max_tokens_per_chunk': 512,  # Maximum allowed by API
-                'max_overlap_tokens': 50  # Reduced to stay within limits
+            "white_space_config": {
+                "max_tokens_per_chunk": 512,  # Maximum allowed by API
+                "max_overlap_tokens": 50,  # Reduced to stay within limits
             }
         }
 
@@ -40,8 +41,8 @@ def index_educational_content(self, content_id: int):
 
         # Success - mark as indexed
         content.indexed = True
-        content.indexing_error = ''
-        content.save(update_fields=['indexed', 'indexing_error'])
+        content.indexing_error = ""
+        content.save(update_fields=["indexed", "indexing_error"])
 
         logger.info(f"Successfully indexed content {content_id}")
         return f"Successfully indexed content {content_id}"
@@ -55,21 +56,24 @@ def index_educational_content(self, content_id: int):
         if content:
             content.indexing_error = error_message[:1000]  # Limit error message length
             content.indexed = False
-            content.save(update_fields=['indexed', 'indexing_error'])
-        
+            content.save(update_fields=["indexed", "indexing_error"])
+
         logger.error(f"Failed to index content {content_id}: {error_message}", exc_info=True)
-        
+
         # Retry with exponential backoff (only if retries remaining)
         if self.request.retries < self.max_retries:
-            retry_countdown = 60 * (2 ** self.request.retries)
-            logger.info(f"Retrying indexing for content {content_id} in {retry_countdown}s (attempt {self.request.retries + 1}/{self.max_retries})")
+            retry_countdown = 60 * (2**self.request.retries)
+            logger.info(
+                f"Retrying indexing for content {content_id} in {retry_countdown}s (attempt {self.request.retries + 1}/{self.max_retries})"
+            )
             raise self.retry(exc=exc, countdown=retry_countdown)
         else:
             # Max retries reached - mark as failed
             logger.error(f"Max retries reached for content {content_id}. Marking as failed.")
             if content:
-                content.indexing_error = f"Indexing failed after {self.max_retries} retries: {error_message[:500]}"
+                content.indexing_error = (
+                    f"Indexing failed after {self.max_retries} retries: {error_message[:500]}"
+                )
                 content.indexed = False
-                content.save(update_fields=['indexed', 'indexing_error'])
+                content.save(update_fields=["indexed", "indexing_error"])
             raise
-

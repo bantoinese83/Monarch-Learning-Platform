@@ -7,7 +7,7 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  timeout: 30000, // 30 seconds
+  timeout: 180000, // 3 minutes (180 seconds) - increased for AI operations like assessment generation
 })
 
 // Add token to requests
@@ -83,10 +83,12 @@ api.interceptors.response.use(
       const status = error.response.status
       const data = error.response.data as any
 
-      // Format error message
+      // Format error message - prioritize details for more specific messages
       let message = 'An error occurred'
       if (data?.detail) {
         message = data.detail
+      } else if (data?.details) {
+        message = data.details
       } else if (data?.error) {
         message = data.error
       } else if (data?.message) {

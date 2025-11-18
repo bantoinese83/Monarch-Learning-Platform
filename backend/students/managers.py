@@ -1,6 +1,7 @@
 """
 Custom managers and querysets for students app
 """
+
 from django.contrib.auth.models import UserManager
 from django.db import models
 
@@ -10,7 +11,7 @@ class StudentQuerySet(models.QuerySet):
 
     def with_profiles(self):
         """Prefetch student profiles"""
-        return self.select_related('student_profile')
+        return self.select_related("student_profile")
 
     def active(self):
         """Get active students"""
@@ -24,9 +25,9 @@ class StudentQuerySet(models.QuerySet):
         """Prefetch recent assessments"""
         return self.prefetch_related(
             models.Prefetch(
-                'assessments',
-                queryset=self.model.assessments.model.objects.order_by('-completed_at')[:limit],
-                to_attr='recent_assessments'
+                "assessments",
+                queryset=self.model.assessments.model.objects.order_by("-completed_at")[:limit],
+                to_attr="recent_assessments",
             )
         )
 
@@ -67,6 +68,7 @@ class AssessmentQuerySet(models.QuerySet):
         from datetime import timedelta
 
         from django.utils import timezone
+
         cutoff = timezone.now() - timedelta(days=days)
         return self.filter(completed_at__gte=cutoff)
 
@@ -76,7 +78,7 @@ class AssessmentQuerySet(models.QuerySet):
 
     def with_student(self):
         """Select related student"""
-        return self.select_related('student')
+        return self.select_related("student")
 
     def optimized(self):
         """Fully optimized queryset"""
@@ -123,7 +125,7 @@ class KnowledgeGapQuerySet(models.QuerySet):
 
     def with_student(self):
         """Select related student"""
-        return self.select_related('student')
+        return self.select_related("student")
 
     def optimized(self):
         """Fully optimized queryset"""
@@ -170,14 +172,11 @@ class LearningPathQuerySet(models.QuerySet):
 
     def with_items(self):
         """Prefetch path items with content"""
-        return self.prefetch_related(
-            'items__content',
-            'items__content__uploaded_by'
-        )
+        return self.prefetch_related("items__content", "items__content__uploaded_by")
 
     def with_student(self):
         """Select related student"""
-        return self.select_related('student')
+        return self.select_related("student")
 
     def optimized(self):
         """Fully optimized queryset"""
@@ -219,11 +218,11 @@ class LearningPathItemQuerySet(models.QuerySet):
 
     def with_path(self):
         """Select related learning path"""
-        return self.select_related('learning_path', 'learning_path__student')
+        return self.select_related("learning_path", "learning_path__student")
 
     def with_content(self):
         """Select related content"""
-        return self.select_related('content', 'content__uploaded_by')
+        return self.select_related("content", "content__uploaded_by")
 
     def optimized(self):
         """Fully optimized queryset"""

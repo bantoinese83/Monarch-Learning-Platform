@@ -13,6 +13,7 @@ from .serializers import (
     StudentProfileSerializer,
     UserSerializer,
 )
+from .services import AssessmentGenerator
 
 
 class RegisterView(generics.CreateAPIView):
@@ -26,49 +27,58 @@ class RegisterView(generics.CreateAPIView):
         user = serializer.save()
 
         refresh = RefreshToken.for_user(user)
-        return Response({
-            'user': UserSerializer(user).data,
-            'refresh': str(refresh),
-            'access': str(refresh.access_token),
-        }, status=status.HTTP_201_CREATED)
+        return Response(
+            {
+                "user": UserSerializer(user).data,
+                "refresh": str(refresh),
+                "access": str(refresh.access_token),
+            },
+            status=status.HTTP_201_CREATED,
+        )
 
 
-@api_view(['POST'])
+@api_view(["POST"])
 @permission_classes([permissions.AllowAny])
 def login_view(request):
-    username = request.data.get('username')
-    password = request.data.get('password')
+    username = request.data.get("username")
+    password = request.data.get("password")
 
     if not username or not password:
-        return Response({'error': 'Username and password required'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(
+            {"error": "Username and password required"}, status=status.HTTP_400_BAD_REQUEST
+        )
 
     user = authenticate(username=username, password=password)
     if not user:
-        return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+        return Response({"error": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
 
     refresh = RefreshToken.for_user(user)
-    return Response({
-        'user': UserSerializer(user).data,
-        'refresh': str(refresh),
-        'access': str(refresh.access_token),
-    })
+    return Response(
+        {
+            "user": UserSerializer(user).data,
+            "refresh": str(refresh),
+            "access": str(refresh.access_token),
+        }
+    )
 
 
-@api_view(['POST'])
+@api_view(["POST"])
 @permission_classes([permissions.AllowAny])
 def refresh_token_view(request):
     """JWT token refresh endpoint"""
-    refresh_token = request.data.get('refresh')
+    refresh_token = request.data.get("refresh")
     if not refresh_token:
-        return Response({'error': 'Refresh token required'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"error": "Refresh token required"}, status=status.HTTP_400_BAD_REQUEST)
 
     try:
         refresh = RefreshToken(refresh_token)
-        return Response({
-            'access': str(refresh.access_token),
-        })
+        return Response(
+            {
+                "access": str(refresh.access_token),
+            }
+        )
     except Exception:
-        return Response({'error': 'Invalid refresh token'}, status=status.HTTP_401_UNAUTHORIZED)
+        return Response({"error": "Invalid refresh token"}, status=status.HTTP_401_UNAUTHORIZED)
 
 
 class ProfileView(generics.RetrieveUpdateAPIView):
@@ -128,3 +138,34 @@ class LearningPathDetailView(generics.RetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         return LearningPath.objects.by_student(self.request.user.id)
+
+
+@api_view(["GET"])
+@permission_classes([permissions.IsAuthenticated])
+def generate_assessment(request):
+    """
+    Generate a personalized assessment for the authenticated student.
+    Query parameters: subject, topic, num_questions
+    """
+    try:
+        subject = request.GET.get("subject", "General")
+        topic = request.GET.get("topic")
+        num_questions = int(request.GET.get("num_questions", "5"))
+
+        # Limit number of questions for performance
+        num_questions = min(max(num_questions, 3), 10)
+
+        generator = AssessmentGenerator()
+        assessment = generator.generate_assessment(
+            student_id=request.user.id, subject=subject, topic=topic, num_questions=num_questions
+        )
+
+        return Response(assessment)
+
+    except ValueError:
+        return Response({"error": "Invalid parameters"}, status=status.HTTP_400_BAD_REQUEST)
+    except Exception as e:
+        return Response(
+            {"error": "Failed to generate assessment", "details": str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )

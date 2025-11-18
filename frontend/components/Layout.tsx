@@ -33,6 +33,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const navigation = [
     { name: 'Dashboard', href: '/dashboard' },
     { name: 'Content', href: '/content' },
+    { name: 'Assessment', href: '/assessment' },
     { name: 'Tutor Bot', href: '/tutor' },
     { name: 'Analytics', href: '/analytics' },
   ]
@@ -41,8 +42,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50">
       <nav className="sticky top-0 z-50 border-b border-gray-200/80 bg-white/80 shadow-soft backdrop-blur-md">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex h-16 justify-between">
-            <div className="flex">
+          <div className="flex flex-wrap items-center justify-between gap-4 py-4 lg:h-16 lg:py-0">
+            <div className="flex flex-1 items-center gap-4 min-w-0">
               <div className="flex flex-shrink-0 items-center">
                 <Link href="/dashboard" className="group flex items-center gap-2">
                   <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-primary-600 to-primary-700 text-white shadow-md transition-transform duration-200 group-hover:scale-110">
@@ -58,7 +59,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   <h1 className="gradient-text text-xl font-bold">Monarch Learning</h1>
                 </Link>
               </div>
-              <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
+              <div className="hidden sm:ml-4 sm:flex sm:gap-2 lg:gap-3 xl:gap-4 2xl:gap-5 sm:overflow-x-auto sm:whitespace-nowrap">
                 {navigation.map(item => {
                   const isActive = pathname === item.href
                   const icons: Record<string, React.ReactNode> = {
@@ -89,6 +90,21 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                           strokeLinejoin="round"
                           strokeWidth={2}
                           d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                        />
+                      </svg>
+                    ),
+                    Assessment: (
+                      <svg
+                        className="mr-2 h-4 w-4"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
                         />
                       </svg>
                     ),
@@ -149,7 +165,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 })}
               </div>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 flex-shrink-0">
               <div className="flex items-center gap-2 rounded-lg px-2 py-1.5 transition-colors hover:bg-gray-100">
                 <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-primary-500 to-primary-600 text-sm font-semibold text-white shadow-md transition-transform duration-200 hover:scale-110">
                   {user?.username?.charAt(0).toUpperCase() || 'U'}

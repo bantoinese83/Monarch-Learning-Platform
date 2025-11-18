@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import Layout from '@/components/Layout'
 import api from '@/lib/api'
 import EmptyState from '@/components/EmptyState'
-import LoadingSpinner from '@/components/LoadingSpinner'
+import CircleAnimation from '@/components/CircleAnimation'
 import SkeletonLoader from '@/components/SkeletonLoader'
 import SubjectPerformanceBar from '@/components/charts/SubjectPerformanceBar'
 import KnowledgeGapsPie from '@/components/charts/KnowledgeGapsPie'
@@ -243,7 +243,7 @@ export default function AnalyticsPage() {
                 description="Complete your first assessment to see results here."
                 action={{
                   label: 'Take Assessment',
-                  href: '/dashboard',
+                  href: '/assessment?subject=Science&topic=Physics'
                 }}
               />
             )}

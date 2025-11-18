@@ -2,7 +2,6 @@
 Tutor bot service with RAG using Gemini File Search
 """
 
-
 from content.services import GeminiFileSearchService
 from students.models import StudentProfile
 
@@ -19,7 +18,7 @@ class TutorBotService:
         student_id: int,
         conversation_history: list[dict] | None = None,
         subject_filter: str | None = None,
-        difficulty_filter: str | None = None
+        difficulty_filter: str | None = None,
     ) -> dict:
         """
         Generate tutor bot response using RAG.
@@ -33,8 +32,8 @@ class TutorBotService:
             file_stores = self._get_student_file_stores(student_id)
             if not file_stores:
                 return {
-                    'text': "I don't have access to any educational content yet. Please upload some materials first!",
-                    'citations': []
+                    "text": "I don't have access to any educational content yet. Please upload some materials first!",
+                    "citations": [],
                 }
 
             # Build metadata filter if needed
@@ -48,25 +47,25 @@ class TutorBotService:
                 query=enhanced_query,
                 file_search_store_names=[store.name for store in file_stores],
                 metadata_filter=metadata_filter,
-                student_context=student_context
+                student_context=student_context,
             )
 
             return result
 
         except Exception as e:
             return {
-                'text': f"I encountered an error: {str(e)}. Please try again or contact support.",
-                'citations': []
+                "text": f"I encountered an error: {str(e)}. Please try again or contact support.",
+                "citations": [],
             }
 
     def _get_student_context(self, student_id: int) -> dict | None:
         """Get student profile context for personalized responses"""
         try:
-            profile = StudentProfile.objects.select_related('user').get(user_id=student_id)
+            profile = StudentProfile.objects.select_related("user").get(user_id=student_id)
             return {
-                'learning_style': profile.learning_style,
-                'grade_level': profile.grade_level,
-                'preferred_language': profile.preferred_language,
+                "learning_style": profile.learning_style,
+                "grade_level": profile.grade_level,
+                "preferred_language": profile.preferred_language,
             }
         except StudentProfile.DoesNotExist:
             return None
@@ -90,7 +89,7 @@ class TutorBotService:
         if not filters:
             return None
 
-        return ' AND '.join(filters)
+        return " AND ".join(filters)
 
     def _build_enhanced_query(self, query: str, history: list[dict] | None) -> str:
         """Enhance query with conversation context"""
@@ -100,7 +99,7 @@ class TutorBotService:
         # Include recent context (last 3 exchanges)
         context_parts = []
         for msg in history[-6:]:  # Last 3 exchanges (6 messages)
-            role_prefix = "Student" if msg['role'] == 'user' else "Tutor"
+            role_prefix = "Student" if msg["role"] == "user" else "Tutor"
             context_parts.append(f"{role_prefix}: {msg['content']}")
 
         context = "\n".join(context_parts)
@@ -112,4 +111,3 @@ Current question: {query}
 Please provide a helpful answer considering the conversation context."""
 
         return enhanced
-

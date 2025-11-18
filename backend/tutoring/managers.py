@@ -1,6 +1,7 @@
 """
 Custom managers and querysets for tutoring app
 """
+
 from django.db import models
 
 
@@ -13,17 +14,18 @@ class ConversationQuerySet(models.QuerySet):
 
     def with_student(self):
         """Select related student"""
-        return self.select_related('student')
+        return self.select_related("student")
 
     def with_messages(self, limit=50):
         """Prefetch messages with limit"""
         # Import here to avoid circular import
         from .models import Message
+
         return self.prefetch_related(
             models.Prefetch(
-                'messages',
-                queryset=Message.objects.order_by('created_at')[:limit],
-                to_attr='recent_messages'
+                "messages",
+                queryset=Message.objects.order_by("created_at")[:limit],
+                to_attr="recent_messages",
             )
         )
 
@@ -58,11 +60,11 @@ class MessageQuerySet(models.QuerySet):
 
     def with_conversation(self):
         """Select related conversation"""
-        return self.select_related('conversation', 'conversation__student')
+        return self.select_related("conversation", "conversation__student")
 
     def recent(self, limit=50):
         """Get recent messages"""
-        return self.order_by('created_at')[:limit]
+        return self.order_by("created_at")[:limit]
 
     def optimized(self):
         """Fully optimized queryset"""
@@ -83,4 +85,3 @@ class MessageManager(models.Manager):
 
     def optimized(self):
         return self.get_queryset().optimized()
-

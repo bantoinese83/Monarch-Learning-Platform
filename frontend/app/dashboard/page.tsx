@@ -5,7 +5,7 @@ import Layout from '@/components/Layout'
 import api from '@/lib/api'
 import Link from 'next/link'
 import EmptyState from '@/components/EmptyState'
-import LoadingSpinner from '@/components/LoadingSpinner'
+import CircleAnimation from '@/components/CircleAnimation'
 import SkeletonLoader from '@/components/SkeletonLoader'
 import SubjectPerformanceBar from '@/components/charts/SubjectPerformanceBar'
 import KnowledgeGapsPie from '@/components/charts/KnowledgeGapsPie'
@@ -155,7 +155,7 @@ export default function DashboardPage() {
                 description="Complete assessments to see your subject performance here."
                 action={{
                   label: 'Take Assessment',
-                  href: '/analytics',
+                  href: '/assessment?subject=Mathematics&topic=Algebra',
                 }}
               />
             )}

@@ -1,6 +1,7 @@
 """
 Custom managers and querysets for content app
 """
+
 from django.db import models
 
 
@@ -13,7 +14,7 @@ class FileSearchStoreQuerySet(models.QuerySet):
 
     def with_creator(self):
         """Select related creator"""
-        return self.select_related('created_by')
+        return self.select_related("created_by")
 
     def optimized(self):
         """Fully optimized queryset"""
@@ -58,15 +59,15 @@ class EducationalContentQuerySet(models.QuerySet):
 
     def with_uploader(self):
         """Select related uploader"""
-        return self.select_related('uploaded_by')
+        return self.select_related("uploaded_by")
 
     def with_store(self):
         """Select related file search store"""
-        return self.select_related('file_search_store', 'file_search_store__created_by')
+        return self.select_related("file_search_store", "file_search_store__created_by")
 
     def with_metadata(self):
         """Prefetch custom metadata"""
-        return self.prefetch_related('custom_metadata')
+        return self.prefetch_related("custom_metadata")
 
     def optimized(self):
         """Fully optimized queryset"""
@@ -75,8 +76,14 @@ class EducationalContentQuerySet(models.QuerySet):
     def only_essential(self):
         """Load only essential fields for list views"""
         return self.only(
-            'id', 'title', 'subject', 'difficulty', 'author',
-            'indexed', 'created_at', 'uploaded_by_id'
+            "id",
+            "title",
+            "subject",
+            "difficulty",
+            "author",
+            "indexed",
+            "created_at",
+            "uploaded_by_id",
         )
 
 

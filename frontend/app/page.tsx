@@ -3,7 +3,7 @@
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuthStore } from '@/store/authStore'
-import LoadingSpinner from '@/components/LoadingSpinner'
+import CircleAnimation from '@/components/CircleAnimation'
 
 export default function Home() {
   const router = useRouter()
@@ -31,7 +31,12 @@ export default function Home() {
 
   return (
     <div className="flex min-h-screen items-center justify-center">
-      <LoadingSpinner size="lg" text="Redirecting..." />
+      <CircleAnimation
+        type="sonar-sweep"
+        size="lg"
+        text="Redirecting..."
+        title="Initializing"
+      />
     </div>
   )
 }

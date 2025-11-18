@@ -1,17 +1,18 @@
 #!/usr/bin/env python
 """Django's command-line utility for administrative tasks."""
+
 import os
 import sys
 import warnings
 
 # Suppress deprecation warnings from third-party packages
-warnings.filterwarnings('ignore', category=UserWarning, module='rest_framework_simplejwt')
-warnings.filterwarnings('ignore', message='.*pkg_resources is deprecated.*')
+warnings.filterwarnings("ignore", category=UserWarning, module="rest_framework_simplejwt")
+warnings.filterwarnings("ignore", message=".*pkg_resources is deprecated.*")
 
 
 def main():
     """Run administrative tasks."""
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'monarch_learning.settings')
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "monarch_learning.settings")
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:
@@ -23,6 +24,5 @@ def main():
     execute_from_command_line(sys.argv)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
-
